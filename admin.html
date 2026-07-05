@@ -354,7 +354,11 @@ async function cargarPedidos(){
     const telefono = d.telefono || null;
     const fecha = new Date(p.creado_en).toLocaleString('es-ES',{dateStyle:'medium',timeStyle:'short'});
     const lineasDir = [dir.line1, dir.line2].filter(Boolean).join(', ');
-    const lineaCP = [dir.postal_code, dir.city, dir.state].filter(Boolean).join(' ');
+    // ciudad con inicial mayúscula + provincia con nombre completo
+    const ciudad = dir.city ? dir.city.charAt(0).toUpperCase() + dir.city.slice(1) : '';
+    const provincia = nombreProvincia(dir.state);
+    const lineaCP = [dir.postal_code, ciudad].filter(Boolean).join(' ');
+    const lineaProv = provincia ? `${provincia} (España)` : (dir.country === 'ES' ? 'España' : dir.country || '');
     const hayDir = lineasDir || lineaCP;
     return `<div class="pedido">
       <div class="cab">
@@ -378,12 +382,36 @@ async function cargarPedidos(){
       <div class="ped-envio">
         <div class="tit">📦 Datos de envío</div>
         <div><b>${esc(nombreEnvio)}</b></div>
-        ${hayDir ? `<div>${esc(lineasDir)}${lineasDir?'<br>':''}${esc(lineaCP)}</div>` : '<div class="meta">⚠️ Sin dirección (pedido antiguo — vuelve a probar con una compra nueva)</div>'}
+        ${hayDir ? `<div>${esc(lineasDir)}${lineasDir?'<br>':''}${esc(lineaCP)}${lineaProv?'<br>'+esc(lineaProv):''}</div>` : '<div class="meta">⚠️ Sin dirección (pedido antiguo — vuelve a probar con una compra nueva)</div>'}
         ${telefono ? `<div>📞 <a href="tel:${esc(telefono)}">${esc(telefono)}</a></div>` : ''}
         ${p.email ? `<div>✉️ <a href="mailto:${esc(p.email)}">${esc(p.email)}</a></div>` : ''}
       </div>
     </div>`;
   }).join('') || '<div style="color:var(--topo)">Todavía no hay pedidos. En cuanto alguien compre, aparecerá aquí con su dirección de envío.</div>';
+}
+
+// Traduce el código de provincia de Stripe (B, GI, M...) a su nombre completo
+function nombreProvincia(cod){
+  if (!cod) return '';
+  const P = {
+    'A':'Alicante','AB':'Albacete','AL':'Almería','AV':'Ávila','B':'Barcelona','BA':'Badajoz',
+    'BI':'Bizkaia','BU':'Burgos','C':'A Coruña','CA':'Cádiz','CC':'Cáceres','CE':'Ceuta',
+    'CO':'Córdoba','CR':'Ciudad Real','CS':'Castellón','CU':'Cuenca','GC':'Las Palmas',
+    'GI':'Girona','GR':'Granada','GU':'Guadalajara','H':'Huelva','HU':'Huesca','J':'Jaén',
+    'L':'Lleida','LE':'León','LO':'La Rioja','LU':'Lugo','M':'Madrid','MA':'Málaga',
+    'ML':'Melilla','MU':'Murcia','NA':'Navarra','O':'Asturias','OR':'Ourense','P':'Palencia',
+    'PM':'Illes Balears','IB':'Illes Balears','PO':'Pontevedra','S':'Cantabria','SA':'Salamanca',
+    'SE':'Sevilla','SG':'Segovia','SO':'Soria','SS':'Gipuzkoa','T':'Tarragona','TE':'Teruel',
+    'TF':'Santa Cruz de Tenerife','TO':'Toledo','V':'Valencia','VA':'Valladolid','VI':'Álava',
+    'Z':'Zaragoza','ZA':'Zamora'
+  };
+  const clave = String(cod).trim().toUpperCase();
+  // si ya viene el nombre completo, lo dejamos tal cual (con inicial mayúscula)
+  if (clave.length > 3 || !P[clave]) {
+    const s = String(cod).trim();
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+  return P[clave];
 }
 window.marcar = async function(id, estado){
   await db.from('pedidos').update({estado}).eq('id', id);
