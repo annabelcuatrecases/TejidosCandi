@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Rincón de Tejidos Candi — Telas con historia · Barcelona</title>
+<meta name="description" content="Tienda de tejidos en Barcelona. Algodones de patchwork, telas infantiles, alta costura, carnaval y retales. Telas de calidad, algunas descatalogadas y de archivo. Envío a toda España por 5,90 €.">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --tinto:#8B0000; --tinto-osc:#5C0A0A;
+    --lino:#FAF5EC; --crudo:#F2EADB; --hilo:#DACDB5;
+    --carbon:#2C241D; --topo:#7A6E5E;
+    --oro:#A97E2F; --oro-suave:#F4E7C8;
+    --cinta:#F3D36B; /* cinta métrica */
+    --radius:14px;
+    --sombra:0 10px 30px rgba(92,10,10,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Karla',sans-serif;background:var(--lino);color:var(--carbon);line-height:1.6}
+  img{max-width:100%;display:block}
+  button{font-family:inherit;cursor:pointer}
+  h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;line-height:1.15}
+
+  /* ---------- borde "orillo" cosido bajo la cabecera ---------- */
+  .puntada{height:0;border-bottom:2px dashed var(--tinto);opacity:.45}
+
+  /* ---------- cabecera ---------- */
+  header{position:sticky;top:0;z-index:50;background:var(--lino);box-shadow:0 1px 0 var(--hilo)}
+  .barra{max-width:1150px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:18px}
+  .logo{text-decoration:none;line-height:0}
+  .logo img{height:56px;width:auto;display:block}
+  nav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  nav a{color:var(--carbon);text-decoration:none;font-size:.92rem;padding:6px 10px;border-radius:8px}
+  nav a:hover{background:var(--crudo)}
+  .btn-carrito{position:relative;background:var(--tinto);color:#fff;border:none;border-radius:999px;padding:9px 18px;font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:8px}
+  .btn-carrito:hover{background:var(--tinto-osc)}
+  .btn-carrito .num{background:#fff;color:var(--tinto);border-radius:999px;min-width:22px;height:22px;display:grid;place-items:center;font-size:.8rem}
+
+  /* ---------- hero ---------- */
+  .hero{max-width:1150px;margin:0 auto;padding:64px 20px 46px;display:grid;grid-template-columns:1.2fr .8fr;gap:44px;align-items:center}
+  .hero h1{font-size:clamp(2rem,4.4vw,3.3rem);color:var(--tinto-osc)}
+  .hero h1 em{font-style:italic;color:var(--tinto)}
+  .hero p{margin-top:16px;color:var(--topo);max-width:52ch;font-size:1.06rem}
+  .hero .cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+  .btn{display:inline-block;border-radius:999px;padding:12px 26px;font-weight:700;text-decoration:none;font-size:1rem;border:2px solid var(--tinto)}
+  .btn.lleno{background:var(--tinto);color:#fff}
+  .btn.lleno:hover{background:var(--tinto-osc);border-color:var(--tinto-osc)}
+  .btn.hueco{color:var(--tinto);background:transparent}
+  .btn.hueco:hover{background:var(--crudo)}
+  /* foto real de la tienda en el hero, con borde de tijeras dentadas */
+  .fototienda{margin:0;transform:rotate(-1.5deg);max-width:420px;justify-self:center}
+  .fototienda img{width:100%;display:block;border-radius:12px 12px 0 0;box-shadow:var(--sombra);
+    -webkit-mask:conic-gradient(from -45deg at 50% 100%,#0000,#000 1deg 89deg,#0000 90deg) 50% 100%/18px 12px repeat-x, linear-gradient(#000 0 calc(100% - 12px),#0000 0);
+    mask:conic-gradient(from -45deg at 50% 100%,#0000,#000 1deg 89deg,#0000 90deg) 50% 100%/18px 12px repeat-x, linear-gradient(#000 0 calc(100% - 12px),#0000 0);}
+  .fototienda figcaption{font-size:.82rem;color:var(--topo);text-align:center;margin-top:10px;font-style:italic}
+
+  /* ---------- franja info ---------- */
+  .franja{background:var(--tinto);color:#fff}
+  .franja .in{max-width:1150px;margin:0 auto;padding:14px 20px;display:flex;gap:30px;justify-content:center;flex-wrap:wrap;font-size:.93rem}
+  .franja span{display:flex;align-items:center;gap:8px}
+
+  /* ---------- secciones ---------- */
+  section{max-width:1150px;margin:0 auto;padding:56px 20px}
+  .cabecera-seccion{display:flex;align-items:baseline;gap:16px;margin-bottom:26px;flex-wrap:wrap}
+  .cabecera-seccion h2{font-size:1.9rem;color:var(--tinto-osc)}
+  .cabecera-seccion small{color:var(--topo)}
+
+  /* ---------- categorías (fichas-muestra) ---------- */
+  .cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
+  .cat{border:none;background:var(--crudo);border-radius:var(--radius);overflow:hidden;text-align:left;box-shadow:var(--sombra);transition:transform .15s ease}
+  .cat:hover{transform:translateY(-4px)}
+  .cat .tela{height:92px}
+  .cat .pie{padding:12px 14px}
+  .cat .pie b{display:block;font-family:'Fraunces',serif;font-size:1.02rem;color:var(--tinto-osc)}
+  .cat .pie span{font-size:.8rem;color:var(--topo)}
+  .cat.activa{outline:3px solid var(--tinto)}
+
+  /* patrones de tela por categoría (CSS puro) */
+  .p-algodones{background:
+    repeating-linear-gradient(0deg,rgba(139,0,0,.28) 0 10px,transparent 10px 20px),
+    repeating-linear-gradient(90deg,rgba(139,0,0,.28) 0 10px,transparent 10px 20px),#fdf8ef}
+  .p-infantiles{background:radial-gradient(circle 5px at 12px 12px,#e8b23a 96%,transparent),radial-gradient(circle 5px at 36px 34px,#4d7ba8 96%,transparent),radial-gradient(circle 5px at 58px 10px,#b8483f 96%,transparent),#fdf6ea;background-size:70px 46px}
+  .p-varios{background:repeating-linear-gradient(45deg,#7d8b6a 0 9px,#f4eddd 9px 18px,#a98f5f 18px 27px,#f4eddd 27px 36px)}
+  .p-altacostura{background:radial-gradient(circle 3px at 50% 50%,rgba(169,126,47,.85) 97%,transparent) 0 0/16px 16px,radial-gradient(circle 3px at 0 0,rgba(169,126,47,.55) 97%,transparent) 8px 8px/16px 16px,#f8f2e4}
+  .p-carnaval{background:linear-gradient(135deg,#8B0000 25%,transparent 25%) -14px 0/28px 28px,linear-gradient(225deg,#e8b23a 25%,transparent 25%) -14px 0/28px 28px,linear-gradient(315deg,#4d7ba8 25%,transparent 25%) 0 0/28px 28px,linear-gradient(45deg,#7d8b6a 25%,#f6efe0 25%) 0 0/28px 28px}
+  .p-retales{background:
+    linear-gradient(90deg,var(--hilo) 1px,transparent 1px) 0 0/33.4% 100%,
+    linear-gradient(0deg,var(--hilo) 1px,transparent 1px) 0 0/100% 50%,
+    linear-gradient(90deg,#f3e2c8 0 33.3%,#e9d3d3 33.3% 66.6%,#dde3d2 66.6% 100%)}
+
+  /* ---------- rejilla de productos ---------- */
+  .filtros{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+  .chip{border:1.5px solid var(--hilo);background:#fff;border-radius:999px;padding:7px 16px;font-size:.9rem;color:var(--carbon)}
+  .chip.on{background:var(--tinto);border-color:var(--tinto);color:#fff;font-weight:700}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:22px}
+  .card{background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:var(--sombra);display:flex;flex-direction:column;border:1px solid rgba(0,0,0,.04)}
+  .card .foto{position:relative;aspect-ratio:4/3;background:var(--crudo) center/cover no-repeat;cursor:pointer;
+    -webkit-mask:conic-gradient(from -45deg at 50% 100%,#0000,#000 1deg 89deg,#0000 90deg) 50% 100%/16px 11px repeat-x, linear-gradient(#000 0 calc(100% - 11px),#0000 0);
+    mask:conic-gradient(from -45deg at 50% 100%,#0000,#000 1deg 89deg,#0000 90deg) 50% 100%/16px 11px repeat-x, linear-gradient(#000 0 calc(100% - 11px),#0000 0);}
+  .card .foto.sinimg{display:grid;place-items:center;color:var(--topo);font-size:2rem}
+  .insignia{position:absolute;top:10px;left:10px;background:var(--oro-suave);color:var(--oro);border:1px solid var(--oro);font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px;letter-spacing:.4px}
+  .card .cuerpo{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .card h3{font-size:1.08rem;color:var(--tinto-osc);cursor:pointer}
+  .card .detalles{font-size:.82rem;color:var(--topo)}
+  .card .abajo{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:8px}
+  .precio{font-family:'Fraunces',serif;font-weight:700;font-size:1.2rem;color:var(--tinto)}
+  .precio small{font-family:'Karla',sans-serif;font-weight:500;font-size:.75rem;color:var(--topo)}
+  .btn-mini{background:var(--tinto);color:#fff;border:none;border-radius:999px;padding:8px 16px;font-weight:700;font-size:.88rem}
+  .btn-mini:hover{background:var(--tinto-osc)}
+  .poco-stock{font-size:.78rem;color:var(--tinto);font-weight:700}
+  .vacio{padding:60px 20px;text-align:center;color:var(--topo)}
+
+  /* ---------- modal producto ---------- */
+  dialog{border:none;border-radius:var(--radius);max-width:760px;width:calc(100% - 32px);padding:0;box-shadow:0 30px 80px rgba(0,0,0,.3)}
+  dialog::backdrop{background:rgba(44,36,29,.55)}
+  .modal-in{display:grid;grid-template-columns:1fr 1fr}
+  .modal-in .foto-g{background:var(--crudo) center/cover no-repeat;min-height:320px}
+  .modal-in .info{padding:26px;display:flex;flex-direction:column;gap:12px}
+  .modal-in h3{font-size:1.5rem;color:var(--tinto-osc)}
+  .modal-in .desc{color:var(--topo);font-size:.95rem;white-space:pre-line}
+  .cerrar{position:absolute;top:10px;right:12px;background:#fff;border:1px solid var(--hilo);border-radius:999px;width:34px;height:34px;font-size:1rem}
+  /* selector estilo cinta métrica */
+  .cinta{display:flex;align-items:stretch;border-radius:10px;overflow:hidden;border:2px solid var(--carbon);width:max-content}
+  .cinta button{width:44px;background:var(--carbon);color:#fff;border:none;font-size:1.3rem}
+  .cinta .valor{min-width:110px;display:grid;place-items:center;font-family:'Fraunces',serif;font-weight:700;font-size:1.15rem;color:var(--carbon);
+    background:repeating-linear-gradient(90deg,transparent 0 9px,rgba(44,36,29,.5) 9px 10px) 0 0/100% 7px no-repeat,
+               repeating-linear-gradient(90deg,transparent 0 4px,rgba(44,36,29,.28) 4px 5px) 0 0/100% 4px no-repeat,var(--cinta)}
+
+  /* ---------- cajón carrito ---------- */
+  .cajon{position:fixed;inset:0 0 0 auto;width:min(430px,100%);background:var(--lino);z-index:100;box-shadow:-20px 0 60px rgba(0,0,0,.25);transform:translateX(105%);transition:transform .25s ease;display:flex;flex-direction:column}
+  .cajon.abierto{transform:none}
+  .cajon .cab{padding:18px 22px;border-bottom:2px dashed var(--hilo);display:flex;justify-content:space-between;align-items:center}
+  .cajon .cab h3{color:var(--tinto-osc)}
+  .cajon .lineas{flex:1;overflow:auto;padding:16px 22px;display:flex;flex-direction:column;gap:14px}
+  .linea{display:grid;grid-template-columns:60px 1fr auto;gap:12px;background:#fff;padding:10px;border-radius:10px;align-items:center;box-shadow:var(--sombra)}
+  .linea .mini{width:60px;height:60px;border-radius:8px;background:var(--crudo) center/cover no-repeat}
+  .linea b{font-size:.92rem;display:block;color:var(--tinto-osc)}
+  .linea .ctl{display:flex;align-items:center;gap:8px;margin-top:4px}
+  .linea .ctl button{width:26px;height:26px;border-radius:6px;border:1.5px solid var(--hilo);background:#fff;font-weight:700}
+  .linea .quitar{background:none;border:none;color:var(--topo);font-size:.78rem;text-decoration:underline}
+  .cajon .pie{padding:18px 22px;border-top:2px dashed var(--hilo);background:var(--crudo)}
+  .fila-total{display:flex;justify-content:space-between;font-size:.95rem;margin-bottom:6px}
+  .fila-total.total{font-family:'Fraunces',serif;font-weight:700;font-size:1.25rem;color:var(--tinto-osc);margin-top:8px}
+  .btn-pagar{width:100%;margin-top:14px;background:var(--tinto);color:#fff;border:none;border-radius:999px;padding:14px;font-size:1.05rem;font-weight:700}
+  .btn-pagar:hover{background:var(--tinto-osc)}
+  .btn-pagar:disabled{opacity:.6;cursor:wait}
+  .nota-envio{font-size:.78rem;color:var(--topo);text-align:center;margin-top:10px}
+  .velo{position:fixed;inset:0;background:rgba(44,36,29,.45);z-index:99;opacity:0;pointer-events:none;transition:opacity .25s}
+  .velo.on{opacity:1;pointer-events:auto}
+
+  /* ---------- avisos ---------- */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120%);background:var(--carbon);color:#fff;padding:12px 24px;border-radius:999px;font-size:.92rem;z-index:200;transition:transform .3s}
+  .toast.on{transform:translateX(-50%) translateY(0)}
+  .banner{max-width:1150px;margin:18px auto 0;padding:14px 20px;border-radius:12px;font-weight:700;display:none}
+  .banner.ok{display:block;background:#e8f2e3;color:#3c6b2f;border:1px solid #b9d6ac}
+  .banner.ko{display:block;background:#fdeaea;color:var(--tinto);border:1px solid #eebcbc}
+
+  /* ---------- historia / footer ---------- */
+  .historia{background:var(--crudo)}
+  .historia .in{max-width:820px;margin:0 auto;padding:56px 20px;text-align:center}
+  .historia h2{color:var(--tinto-osc);font-size:1.8rem;margin-bottom:14px}
+  .historia p{color:var(--topo)}
+  footer{background:var(--tinto-osc);color:#f3e6da;margin-top:0}
+  footer .in{max-width:1150px;margin:0 auto;padding:40px 20px;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;font-size:.9rem}
+  footer a{color:#f3e6da}
+  footer .flogo{font-family:'Great Vibes',cursive;font-size:1.6rem}
+
+  @media(max-width:820px){
+    .hero{grid-template-columns:1fr;padding-top:40px}
+    .muestrario,.fototienda{max-width:340px;margin:0 auto}
+    .modal-in{grid-template-columns:1fr}
+    .modal-in .foto-g{min-height:220px}
+    .barra{flex-wrap:wrap;justify-content:center}
+    .logo img{height:44px}
+    nav{margin-left:0}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="barra">
+    <a class="logo" href="#" aria-label="El Rincón de Tejidos Candi — inicio">
+      <img src="logo.png" alt="El Rincón de Tejidos Candi">
+    </a>
+    <nav>
+      <a href="#catalogo">Catálogo</a>
+      <a href="#historia">La tienda</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+    <button class="btn-carrito" id="abrirCarrito" aria-label="Abrir carrito">
+      🧺 Cesta <span class="num" id="numCarrito">0</span>
+    </button>
+  </div>
+  <div class="puntada"></div>
+</header>
+
+<div class="banner" id="banner"></div>
+
+<div class="hero">
+  <div>
+    <h1>Telas con historia,<br>cortadas <em>a tu medida</em></h1>
+    <p>Tejidos de calidad escogidos uno a uno en nuestra tienda de Barcelona:
+    algodones de patchwork, telas infantiles, alta costura y auténticas
+    <strong>telas de archivo</strong> — calidades descatalogadas que ya no se fabrican.
+    Ahora también online, con envío a toda España.</p>
+    <div class="cta">
+      <a class="btn lleno" href="#catalogo">Ver el catálogo</a>
+      <a class="btn hueco" href="#historia">Conoce la tienda</a>
+    </div>
+  </div>
+  <figure class="fototienda">
+    <img src="tienda.jpg" alt="Estanterías repletas de telas en El Rincón de Tejidos Candi, Barcelona">
+    <figcaption>Nuestra tienda, en Barcelona — todo esto, ahora también online</figcaption>
+  </figure>
+</div>
+
+<div class="franja">
+  <div class="in">
+    <span>📦 Envío a toda España · 5,90 €</span>
+    <span>✂️ Corte a medida desde 0,5 m</span>
+    <span>💳 Pago seguro con tarjeta</span>
+    <span>🏷️ Telas de archivo y descatalogadas</span>
+  </div>
+</div>
+
+<section id="catalogo">
+  <div class="cabecera-seccion">
+    <h2>Nuestro catálogo</h2>
+    <small>Elige una sección o explóralo todo</small>
+  </div>
+
+  <div class="cats" id="cats">
+    <button class="cat" data-cat="algodones"><div class="tela" style="background:url('cat-algodones.jpg') center/cover"></div><div class="pie"><b>Algodones estampados</b><span>Patchwork y labores</span></div></button>
+    <button class="cat" data-cat="infantiles"><div class="tela" style="background:url('cat-infantiles.jpg') center/cover"></div><div class="pie"><b>Infantiles</b><span>Dibujos y licencias</span></div></button>
+    <button class="cat" data-cat="varios"><div class="tela p-varios"></div><div class="pie"><b>Telas varias</b><span>Viscosa, lino, cuadros, brocados…</span></div></button>
+    <button class="cat" data-cat="alta-costura"><div class="tela" style="background:url('cat-altacostura.jpg') center/cover"></div><div class="pie"><b>Alta costura</b><span>Bordados, guipur, pedrería</span></div></button>
+    <button class="cat" data-cat="carnaval"><div class="tela p-carnaval"></div><div class="pie"><b>Carnaval</b><span>Telas para disfraces</span></div></button>
+    <button class="cat" data-cat="retales"><div class="tela p-retales"></div><div class="pie"><b>Retales</b><span>Piezas ya cortadas, precio cerrado</span></div></button>
+  </div>
+
+  <div style="height:34px"></div>
+
+  <div class="filtros" id="filtros">
+    <button class="chip on" data-f="todo">Todo</button>
+    <button class="chip" data-f="algodones">Algodones</button>
+    <button class="chip" data-f="infantiles">Infantiles</button>
+    <button class="chip" data-f="varios">Varios</button>
+    <button class="chip" data-f="alta-costura">Alta costura</button>
+    <button class="chip" data-f="carnaval">Carnaval</button>
+    <button class="chip" data-f="retales">Retales</button>
+    <button class="chip" data-f="vintage">🏷️ Telas de archivo</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="vacio" id="vacio" style="display:none">
+    Todavía no hay telas en esta sección. ¡Vuelve pronto, el muestrario crece cada semana!
+  </div>
+</section>
+
+<div class="historia" id="historia">
+  <div class="in">
+    <h2>Un rincón con más de una vida</h2>
+    <p>En El Rincón de Tejidos Candi creemos que una buena tela se nota al primer tacto.
+    Por eso, junto a las novedades, guardamos como un tesoro nuestro <strong>fondo de
+    almacén</strong>: telas de otras épocas, descatalogadas, con calidades y estampados que
+    ya no se encuentran. Cada pieza que ves marcada como <em>«Tela de archivo»</em> es única
+    — cuando se acaba, se acaba. Si buscas algo especial para tu próximo proyecto,
+    aquí lo vas a encontrar.</p>
+  </div>
+</div>
+
+<footer id="contacto">
+  <div class="in">
+    <div>
+      <img src="logo-claro.png" alt="El Rincón de Tejidos Candi" style="height:64px;width:auto;margin-bottom:8px">
+      <div>Barcelona · Envíos a toda España</div>
+      <a href="https://www.tiktok.com/@elrincondetejidoscandi" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;margin-top:12px;text-decoration:none;background:rgba(255,255,255,.12);padding:8px 16px;border-radius:999px;font-weight:700">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.9 2.9 0 0 1 .88.13V9.4a6.33 6.33 0 0 0-.88-.06 6.34 6.34 0 1 0 6.34 6.34V8.73a8.2 8.2 0 0 0 4.77 1.52V6.79a4.85 4.85 0 0 1-1-.1z"/></svg>
+        Síguenos en TikTok
+      </a>
+    </div>
+    <div>
+      <div><b>¿Dudas? Escríbenos por WhatsApp</b></div>
+      <div><a href="https://wa.me/34937231501" target="_blank" rel="noopener">💬 937 23 15 01</a></div>
+      <div style="margin-top:10px"><b>Devoluciones</b></div>
+      <div><a href="mailto:merceriatejidoscandi@gmail.com">merceriatejidoscandi@gmail.com</a></div>
+    </div>
+    <div>
+      <a href="legal.html">Aviso legal · Privacidad · Devoluciones</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ---------- modal producto ---------- -->
+<dialog id="modal">
+  <button class="cerrar" onclick="modal.close()" aria-label="Cerrar">✕</button>
+  <div class="modal-in">
+    <div class="foto-g" id="mFoto"></div>
+    <div class="info">
+      <span id="mBadge"></span>
+      <h3 id="mNombre"></h3>
+      <div class="detalles" id="mDetalles"></div>
+      <p class="desc" id="mDesc"></p>
+      <div class="precio" id="mPrecio"></div>
+      <div>
+        <label style="font-size:.85rem;color:var(--topo)" id="mEtiquetaCant"></label>
+        <div class="cinta" style="margin-top:6px">
+          <button type="button" id="mMenos" aria-label="Menos">−</button>
+          <div class="valor" id="mCant">0,5 m</div>
+          <button type="button" id="mMas" aria-label="Más">+</button>
+        </div>
+        <div class="poco-stock" id="mStock" style="margin-top:8px"></div>
+      </div>
+      <button class="btn-pagar" id="mAnadir" style="margin-top:6px">Añadir a la cesta</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ---------- carrito ---------- -->
+<div class="velo" id="velo"></div>
+<aside class="cajon" id="cajon" aria-label="Cesta de la compra">
+  <div class="cab">
+    <h3>Tu cesta</h3>
+    <button class="cerrar" style="position:static" id="cerrarCarrito" aria-label="Cerrar cesta">✕</button>
+  </div>
+  <div class="lineas" id="lineas"></div>
+  <div class="pie">
+    <div class="fila-total"><span>Subtotal</span><b id="subtotal">0,00 €</b></div>
+    <div class="fila-total"><span>Envío (España)</span><b id="envio">5,90 €</b></div>
+    <div class="fila-total total"><span>Total</span><span id="total">0,00 €</span></div>
+    <button class="btn-pagar" id="pagar">Pagar con tarjeta</button>
+    <div class="nota-envio">Pago seguro gestionado por Stripe · Solo envíos a España</div>
+  </div>
+</aside>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+const CFG = window.CANDI_CONFIG;
+const db = supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+
+const EUR = n => n.toLocaleString('es-ES',{style:'currency',currency:'EUR'});
+const NUM = n => Number(n).toLocaleString('es-ES');
+
+let PRODUCTOS = [];
+let filtro = 'todo';
+let carrito = JSON.parse(localStorage.getItem('candi_carrito') || '[]');
+
+// ---------- avisos de vuelta de Stripe ----------
+const params = new URLSearchParams(location.search);
+if (params.get('pedido') === 'ok') {
+  carrito = []; guardarCarrito();
+  const b = document.getElementById('banner');
+  b.className = 'banner ok';
+  b.textContent = '¡Gracias por tu pedido! 🧵 Te llegará un correo de confirmación y lo prepararemos enseguida.';
+  history.replaceState({}, '', location.pathname);
+} else if (params.get('pedido') === 'cancelado') {
+  const b = document.getElementById('banner');
+  b.className = 'banner ko';
+  b.textContent = 'El pago se canceló. Tu cesta sigue guardada por si quieres intentarlo de nuevo.';
+  history.replaceState({}, '', location.pathname);
+}
+
+// ---------- cargar catálogo ----------
+async function cargar(){
+  const { data, error } = await db.from('productos')
+    .select('*').eq('activo', true)
+    .order('destacado', {ascending:false})
+    .order('creado_en', {ascending:false});
+  if (error) { console.error(error); toast('No se pudo cargar el catálogo'); return; }
+  PRODUCTOS = data || [];
+  pintar();
+}
+
+function pintar(){
+  const grid = document.getElementById('grid');
+  const lista = PRODUCTOS.filter(p =>
+    filtro === 'todo' ? true :
+    filtro === 'vintage' ? p.vintage :
+    p.categoria === filtro);
+  document.getElementById('vacio').style.display = lista.length ? 'none' : 'block';
+  grid.innerHTML = lista.map(p => {
+    const unidad = p.tipo_venta === 'metros' ? '/ metro' : '/ unidad';
+    const det = [p.composicion, p.ancho_cm ? `ancho ${p.ancho_cm} cm` : null].filter(Boolean).join(' · ');
+    const poco = p.tipo_venta === 'metros'
+      ? (p.stock <= 5 ? `Últimos ${NUM(p.stock)} m` : '')
+      : (p.stock <= 3 ? `Quedan ${NUM(p.stock)}` : '');
+    return `<article class="card">
+      <div class="foto ${p.imagen_url?'':'sinimg'}" style="${p.imagen_url?`background-image:url('${p.imagen_url}')`:''}" onclick="abrir('${p.id}')">
+        ${p.imagen_url?'':'🧵'}
+        ${p.vintage?'<span class="insignia">Tela de archivo</span>':''}
+      </div>
+      <div class="cuerpo">
+        <h3 onclick="abrir('${p.id}')">${esc(p.nombre)}</h3>
+        <div class="detalles">${esc(det)}</div>
+        ${poco?`<div class="poco-stock">${poco}</div>`:''}
+        <div class="abajo">
+          <div class="precio">${EUR(p.precio)} <small>${unidad}</small></div>
+          <button class="btn-mini" onclick="abrir('${p.id}')">Elegir</button>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+}
+const esc = s => (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+// ---------- filtros ----------
+document.getElementById('filtros').addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if(!b) return;
+  filtro = b.dataset.f;
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === b));
+  document.querySelectorAll('.cat').forEach(c => c.classList.toggle('activa', c.dataset.cat === filtro));
+  pintar();
+});
+document.getElementById('cats').addEventListener('click', e => {
+  const c = e.target.closest('.cat'); if(!c) return;
+  filtro = c.dataset.cat;
+  document.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x.dataset.f === filtro));
+  document.querySelectorAll('.cat').forEach(x => x.classList.toggle('activa', x === c));
+  document.getElementById('filtros').scrollIntoView({behavior:'smooth', block:'center'});
+  pintar();
+});
+
+// ---------- modal producto ----------
+const modal = document.getElementById('modal');
+let actual = null, cant = 0.5;
+window.abrir = function(id){
+  actual = PRODUCTOS.find(p => p.id === id); if(!actual) return;
+  const esMetros = actual.tipo_venta === 'metros';
+  cant = esMetros ? 0.5 : 1;
+  document.getElementById('mFoto').style.backgroundImage = actual.imagen_url ? `url('${actual.imagen_url}')` : 'none';
+  document.getElementById('mBadge').innerHTML = actual.vintage ? '<span class="insignia" style="position:static">Tela de archivo — pieza única</span>' : '';
+  document.getElementById('mNombre').textContent = actual.nombre;
+  document.getElementById('mDetalles').textContent = [actual.composicion, actual.ancho_cm?`Ancho: ${actual.ancho_cm} cm`:null].filter(Boolean).join(' · ');
+  document.getElementById('mDesc').textContent = actual.descripcion || '';
+  document.getElementById('mPrecio').innerHTML = `${EUR(actual.precio)} <small>${esMetros?'/ metro':'/ unidad'}</small>`;
+  document.getElementById('mEtiquetaCant').textContent = esMetros ? '¿Cuántos metros necesitas? (de 0,5 en 0,5)' : '¿Cuántas unidades?';
+  document.getElementById('mStock').textContent = esMetros ? `Disponible: ${NUM(actual.stock)} m` : `Disponible: ${NUM(actual.stock)} ud.`;
+  refrescarCant();
+  modal.showModal();
+};
+function refrescarCant(){
+  const esMetros = actual.tipo_venta === 'metros';
+  document.getElementById('mCant').textContent = esMetros ? `${NUM(cant)} m` : `${cant} ud.`;
+  const totalLinea = cant * actual.precio;
+  document.getElementById('mAnadir').textContent = `Añadir a la cesta · ${EUR(totalLinea)}`;
+}
+document.getElementById('mMenos').onclick = () => {
+  const paso = actual.tipo_venta === 'metros' ? 0.5 : 1;
+  cant = Math.max(paso, Math.round((cant - paso) * 10) / 10);
+  refrescarCant();
+};
+document.getElementById('mMas').onclick = () => {
+  const paso = actual.tipo_venta === 'metros' ? 0.5 : 1;
+  const enCesta = (carrito.find(l => l.id === actual.id)?.cantidad) || 0;
+  const max = Number(actual.stock) - enCesta;
+  cant = Math.min(max, Math.round((cant + paso) * 10) / 10);
+  if (cant <= 0) { cant = paso; toast('Ya tienes todo el stock disponible en la cesta'); }
+  refrescarCant();
+};
+document.getElementById('mAnadir').onclick = () => {
+  const enCesta = carrito.find(l => l.id === actual.id);
+  const yaHay = enCesta ? enCesta.cantidad : 0;
+  if (yaHay + cant > Number(actual.stock)) { toast('No queda tanto stock disponible'); return; }
+  if (enCesta) enCesta.cantidad = Math.round((yaHay + cant) * 10) / 10;
+  else carrito.push({ id: actual.id, cantidad: cant });
+  guardarCarrito();
+  modal.close();
+  toast('Añadido a la cesta 🧺');
+  abrirCajon();
+};
+
+// ---------- carrito ----------
+const cajon = document.getElementById('cajon'), velo = document.getElementById('velo');
+function abrirCajon(){ cajon.classList.add('abierto'); velo.classList.add('on'); pintarCarrito(); }
+function cerrarCajon(){ cajon.classList.remove('abierto'); velo.classList.remove('on'); }
+document.getElementById('abrirCarrito').onclick = abrirCajon;
+document.getElementById('cerrarCarrito').onclick = cerrarCajon;
+velo.onclick = cerrarCajon;
+
+function guardarCarrito(){
+  localStorage.setItem('candi_carrito', JSON.stringify(carrito));
+  document.getElementById('numCarrito').textContent = carrito.length;
+  pintarCarrito();
+}
+function pintarCarrito(){
+  const cont = document.getElementById('lineas');
+  if (!carrito.length){
+    cont.innerHTML = '<div class="vacio">Tu cesta está vacía.<br>¡Las telas te esperan! 🧵</div>';
+  } else {
+    cont.innerHTML = carrito.map(l => {
+      const p = PRODUCTOS.find(x => x.id === l.id);
+      if (!p) return '';
+      const esM = p.tipo_venta === 'metros';
+      return `<div class="linea">
+        <div class="mini" style="${p.imagen_url?`background-image:url('${p.imagen_url}')`:''}"></div>
+        <div>
+          <b>${esc(p.nombre)}</b>
+          <div class="ctl">
+            <button onclick="cambiar('${l.id}',-1)" aria-label="Menos">−</button>
+            <span>${esM?NUM(l.cantidad)+' m':l.cantidad+' ud.'}</span>
+            <button onclick="cambiar('${l.id}',1)" aria-label="Más">+</button>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="precio" style="font-size:1rem">${EUR(l.cantidad*p.precio)}</div>
+          <button class="quitar" onclick="quitar('${l.id}')">quitar</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  const sub = carrito.reduce((s,l) => {
+    const p = PRODUCTOS.find(x => x.id === l.id);
+    return s + (p ? l.cantidad * p.precio : 0);
+  }, 0);
+  document.getElementById('subtotal').textContent = EUR(sub);
+  document.getElementById('envio').textContent = EUR(CFG.ENVIO_EUR);
+  document.getElementById('total').textContent = EUR(sub ? sub + CFG.ENVIO_EUR : 0);
+  document.getElementById('pagar').disabled = !carrito.length;
+}
+window.cambiar = function(id, dir){
+  const l = carrito.find(x => x.id === id); if(!l) return;
+  const p = PRODUCTOS.find(x => x.id === id);
+  const paso = p.tipo_venta === 'metros' ? 0.5 : 1;
+  const nuevo = Math.round((l.cantidad + dir*paso) * 10) / 10;
+  if (nuevo < paso) return quitar(id);
+  if (nuevo > Number(p.stock)) { toast('No queda más stock disponible'); return; }
+  l.cantidad = nuevo; guardarCarrito();
+};
+window.quitar = function(id){
+  carrito = carrito.filter(x => x.id !== id); guardarCarrito();
+};
+
+// ---------- pago ----------
+document.getElementById('pagar').onclick = async () => {
+  const btn = document.getElementById('pagar');
+  btn.disabled = true; btn.textContent = 'Preparando el pago…';
+  try {
+    const res = await fetch(`${CFG.SUPABASE_URL}/functions/v1/create-checkout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': CFG.SUPABASE_ANON_KEY,
+      },
+      body: JSON.stringify({ items: carrito }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'No se pudo iniciar el pago');
+    location.href = data.url;
+  } catch (e) {
+    toast(e.message);
+    btn.disabled = false; btn.textContent = 'Pagar con tarjeta';
+  }
+};
+
+// ---------- toast ----------
+let toastT;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 3200);
+}
+
+guardarCarrito();
+cargar();
+</script>
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel — El Rincón de Tejidos Candi</title>
+<meta name="robots" content="noindex,nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--tinto:#8B0000;--tinto-osc:#5C0A0A;--lino:#FAF5EC;--crudo:#F2EADB;--hilo:#DACDB5;--carbon:#2C241D;--topo:#7A6E5E;--oro:#A97E2F;--oro-suave:#F4E7C8;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Karla',sans-serif;background:var(--lino);color:var(--carbon);line-height:1.55}
+  h1,h2,h3{font-family:'Fraunces',serif;color:var(--tinto-osc)}
+  button{font-family:inherit;cursor:pointer}
+  input,select,textarea{font-family:inherit;font-size:.95rem;width:100%;padding:10px 12px;border:1.5px solid var(--hilo);border-radius:10px;background:#fff}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--tinto)}
+  label{font-size:.83rem;font-weight:700;color:var(--topo);display:block;margin-bottom:4px}
+  .campo{margin-bottom:14px}
+  .btn{background:var(--tinto);color:#fff;border:none;border-radius:999px;padding:11px 24px;font-weight:700;font-size:.95rem}
+  .btn:hover{background:var(--tinto-osc)}
+  .btn.gris{background:#fff;color:var(--carbon);border:1.5px solid var(--hilo)}
+  .btn:disabled{opacity:.6;cursor:wait}
+  header{background:var(--tinto-osc);color:#f3e6da;padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  header h1{color:#fff;font-size:1.15rem}
+  header .der{margin-left:auto;display:flex;gap:10px;align-items:center;font-size:.85rem}
+  main{max-width:1050px;margin:0 auto;padding:26px 20px}
+  .tabs{display:flex;gap:8px;margin-bottom:22px}
+  .tab{border:1.5px solid var(--hilo);background:#fff;border-radius:999px;padding:8px 20px;font-weight:700}
+  .tab.on{background:var(--tinto);border-color:var(--tinto);color:#fff}
+  .panel{background:#fff;border-radius:16px;padding:22px;box-shadow:0 10px 30px rgba(92,10,10,.07);margin-bottom:24px}
+  .fila2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .fila3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .check{display:flex;align-items:center;gap:8px;font-size:.9rem}
+  .check input{width:auto}
+  .lista{display:flex;flex-direction:column;gap:10px}
+  .prod{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;background:#fff;border:1px solid var(--hilo);border-radius:12px;padding:10px 14px}
+  .prod.inactivo{opacity:.55}
+  .prod .mini{width:64px;height:64px;border-radius:8px;background:var(--crudo) center/cover no-repeat;display:grid;place-items:center}
+  .prod b{color:var(--tinto-osc)}
+  .prod .meta{font-size:.82rem;color:var(--topo)}
+  .prod .acciones{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .mini-btn{border:1.5px solid var(--hilo);background:#fff;border-radius:8px;padding:6px 12px;font-size:.82rem;font-weight:700}
+  .mini-btn.rojo{color:var(--tinto);border-color:var(--tinto)}
+  .aviso-stock{color:var(--tinto);font-weight:700;font-size:.8rem}
+  .insignia{background:var(--oro-suave);color:var(--oro);border:1px solid var(--oro);font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px}
+  .pedido{background:#fff;border:1px solid var(--hilo);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+  .pedido .cab{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+  .pedido ul{margin:8px 0 0 18px;font-size:.9rem}
+  .estado{font-size:.78rem;font-weight:700;padding:3px 12px;border-radius:999px}
+  .estado.pagado{background:#fdeecb;color:#8a6200}
+  .estado.enviado{background:#e2ecf7;color:#2b5b8f}
+  .estado.entregado{background:#e6f2e0;color:#3c6b2f}
+  .oculto{display:none!important}
+  .login-caja{max-width:400px;margin:70px auto;background:#fff;padding:30px;border-radius:16px;box-shadow:0 10px 40px rgba(92,10,10,.12)}
+  .login-caja h2{margin-bottom:6px}
+  .login-caja p{font-size:.88rem;color:var(--topo);margin-bottom:18px}
+  .error{color:var(--tinto);font-size:.85rem;margin-top:8px;font-weight:700}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120%);background:var(--carbon);color:#fff;padding:12px 24px;border-radius:999px;z-index:99;transition:transform .3s;font-size:.92rem}
+  .toast.on{transform:translateX(-50%) translateY(0)}
+  .vista-previa{width:110px;height:110px;border-radius:10px;background:var(--crudo) center/cover no-repeat;border:1.5px dashed var(--hilo);display:grid;place-items:center;color:var(--topo);font-size:.75rem;text-align:center}
+  @media(max-width:640px){.fila2,.fila3{grid-template-columns:1fr}.prod{grid-template-columns:52px 1fr}.prod .acciones{grid-column:1/-1;justify-content:flex-start}}
+</style>
+</head>
+<body>
+
+<!-- ---------- LOGIN ---------- -->
+<div id="vistaLogin">
+  <div class="login-caja">
+    <img src="logo.png" alt="El Rincón de Tejidos Candi" style="width:100%;max-width:280px;display:block;margin:0 auto 18px">
+    <p style="text-align:center">Panel privado de la tienda. Entra con tu correo y contraseña de administradora.</p>
+    <div class="campo"><label>Correo</label><input type="email" id="logEmail" autocomplete="username"></div>
+    <div class="campo"><label>Contraseña</label><input type="password" id="logPass" autocomplete="current-password"></div>
+    <button class="btn" id="btnLogin" style="width:100%">Entrar</button>
+    <div class="error" id="logError"></div>
+  </div>
+</div>
+
+<!-- ---------- PANEL ---------- -->
+<div id="vistaPanel" class="oculto">
+<header>
+  <h1>🧵 Panel de la tienda</h1>
+  <div class="der">
+    <a href="index.html" style="color:#f3e6da">Ver la tienda →</a>
+    <button class="mini-btn" id="btnSalir">Salir</button>
+  </div>
+</header>
+<main>
+  <div class="tabs">
+    <button class="tab on" data-t="productos">Telas</button>
+    <button class="tab" data-t="pedidos">Pedidos <span id="numPedidos"></span></button>
+  </div>
+
+  <!-- ===== TELAS ===== -->
+  <div id="tabProductos">
+    <div class="panel">
+      <h3 id="tituloForm" style="margin-bottom:16px">Añadir una tela nueva</h3>
+      <div class="fila2">
+        <div class="campo"><label>Nombre *</label><input id="fNombre" placeholder="Ej.: Algodón estampado flores liberty"></div>
+        <div class="campo"><label>Sección *</label>
+          <select id="fCategoria">
+            <option value="algodones">Algodones estampados</option>
+            <option value="infantiles">Infantiles</option>
+            <option value="varios">Telas varias</option>
+            <option value="alta-costura">Alta costura</option>
+            <option value="carnaval">Carnaval</option>
+            <option value="retales">Retales</option>
+          </select>
+        </div>
+      </div>
+      <div class="campo"><label>Descripción</label><textarea id="fDesc" rows="3" placeholder="Tacto, usos recomendados, detalles… Si es tela antigua/descatalogada, ¡cuéntalo! Es un valor."></textarea></div>
+      <div class="fila3">
+        <div class="campo"><label>Se vende por *</label>
+          <select id="fTipo">
+            <option value="metros">Metros (corte a medida)</option>
+            <option value="unidad">Unidad (precio cerrado, ej. retal)</option>
+          </select>
+        </div>
+        <div class="campo"><label>Precio (€) *</label><input id="fPrecio" type="number" step="0.01" min="0" placeholder="Por metro o por unidad"></div>
+        <div class="campo"><label>Stock *</label><input id="fStock" type="number" step="0.5" min="0" placeholder="Metros o unidades"></div>
+      </div>
+      <div class="fila3">
+        <div class="campo"><label>Ancho (cm)</label><input id="fAncho" type="number" min="0" placeholder="Ej.: 150"></div>
+        <div class="campo"><label>Composición</label><input id="fComp" placeholder="Ej.: 100% algodón"></div>
+        <div class="campo" style="display:flex;flex-direction:column;gap:10px;justify-content:center">
+          <label class="check" style="margin:0"><input type="checkbox" id="fVintage"> 🏷️ Tela de archivo (descatalogada)</label>
+          <label class="check" style="margin:0"><input type="checkbox" id="fDestacado"> ⭐ Destacar en portada</label>
+        </div>
+      </div>
+      <div class="campo" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <div class="vista-previa" id="fPreview">Foto de la tela</div>
+        <div style="flex:1;min-width:220px">
+          <label>Foto</label>
+          <input type="file" id="fFoto" accept="image/*">
+          <div style="font-size:.78rem;color:var(--topo);margin-top:4px">Consejo: foto con luz natural y la tela bien extendida. Se sube al elegirla.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" id="btnGuardar">Guardar tela</button>
+        <button class="btn gris oculto" id="btnCancelar">Cancelar edición</button>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:12px">Tus telas <small style="font-family:Karla;color:var(--topo);font-weight:400" id="cuenta"></small></h3>
+    <div class="lista" id="listaProds"></div>
+  </div>
+
+  <!-- ===== PEDIDOS ===== -->
+  <div id="tabPedidos" class="oculto">
+    <div id="listaPedidos"></div>
+  </div>
+</main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+const CFG = window.CANDI_CONFIG;
+const db = supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+const EUR = n => Number(n||0).toLocaleString('es-ES',{style:'currency',currency:'EUR'});
+const NUM = n => Number(n).toLocaleString('es-ES');
+const CATS = {'algodones':'Algodones','infantiles':'Infantiles','varios':'Varios','alta-costura':'Alta costura','carnaval':'Carnaval','retales':'Retales'};
+const esc = s => (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+let editando = null;      // id del producto en edición
+let fotoUrl = null;       // url de la foto ya subida
+
+// ---------- sesión ----------
+async function comprobarSesion(){
+  const { data: { session } } = await db.auth.getSession();
+  document.getElementById('vistaLogin').classList.toggle('oculto', !!session);
+  document.getElementById('vistaPanel').classList.toggle('oculto', !session);
+  if (session){ cargarProductos(); cargarPedidos(); }
+}
+document.getElementById('btnLogin').onclick = async () => {
+  const { error } = await db.auth.signInWithPassword({
+    email: document.getElementById('logEmail').value.trim(),
+    password: document.getElementById('logPass').value,
+  });
+  document.getElementById('logError').textContent = error ? 'Correo o contraseña incorrectos.' : '';
+  if (!error) comprobarSesion();
+};
+document.getElementById('logPass').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('btnLogin').click(); });
+document.getElementById('btnSalir').onclick = async () => { await db.auth.signOut(); comprobarSesion(); };
+
+// ---------- pestañas ----------
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x===t));
+  document.getElementById('tabProductos').classList.toggle('oculto', t.dataset.t!=='productos');
+  document.getElementById('tabPedidos').classList.toggle('oculto', t.dataset.t!=='pedidos');
+});
+
+// ---------- foto ----------
+document.getElementById('fFoto').onchange = async (e) => {
+  const file = e.target.files[0]; if(!file) return;
+  toast('Subiendo foto…');
+  const nombre = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_')}`;
+  const { error } = await db.storage.from('productos').upload(nombre, file, { upsert:false });
+  if (error){ toast('Error subiendo la foto'); console.error(error); return; }
+  const { data } = db.storage.from('productos').getPublicUrl(nombre);
+  fotoUrl = data.publicUrl;
+  const pv = document.getElementById('fPreview');
+  pv.style.backgroundImage = `url('${fotoUrl}')`; pv.textContent = '';
+  toast('Foto subida ✓');
+};
+
+// ---------- guardar / editar ----------
+document.getElementById('btnGuardar').onclick = async () => {
+  const p = {
+    nombre: document.getElementById('fNombre').value.trim(),
+    categoria: document.getElementById('fCategoria').value,
+    descripcion: document.getElementById('fDesc').value.trim() || null,
+    tipo_venta: document.getElementById('fTipo').value,
+    precio: parseFloat(document.getElementById('fPrecio').value),
+    stock: parseFloat(document.getElementById('fStock').value),
+    ancho_cm: parseInt(document.getElementById('fAncho').value) || null,
+    composicion: document.getElementById('fComp').value.trim() || null,
+    vintage: document.getElementById('fVintage').checked,
+    destacado: document.getElementById('fDestacado').checked,
+  };
+  if (!p.nombre || isNaN(p.precio) || isNaN(p.stock)) { toast('Faltan datos: nombre, precio y stock son obligatorios'); return; }
+  if (fotoUrl) p.imagen_url = fotoUrl;
+
+  const btn = document.getElementById('btnGuardar');
+  btn.disabled = true;
+  const { error } = editando
+    ? await db.from('productos').update(p).eq('id', editando)
+    : await db.from('productos').insert(p);
+  btn.disabled = false;
+  if (error){ toast('Error al guardar'); console.error(error); return; }
+  toast(editando ? 'Tela actualizada ✓' : 'Tela añadida a la tienda ✓');
+  limpiarForm(); cargarProductos();
+};
+function limpiarForm(){
+  editando = null; fotoUrl = null;
+  ['fNombre','fDesc','fPrecio','fStock','fAncho','fComp'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fVintage').checked = false;
+  document.getElementById('fDestacado').checked = false;
+  document.getElementById('fFoto').value = '';
+  const pv = document.getElementById('fPreview');
+  pv.style.backgroundImage = 'none'; pv.textContent = 'Foto de la tela';
+  document.getElementById('tituloForm').textContent = 'Añadir una tela nueva';
+  document.getElementById('btnCancelar').classList.add('oculto');
+  document.getElementById('btnGuardar').textContent = 'Guardar tela';
+}
+document.getElementById('btnCancelar').onclick = limpiarForm;
+
+// ---------- listado ----------
+let PRODS = [];
+async function cargarProductos(){
+  const { data, error } = await db.from('productos').select('*').order('creado_en',{ascending:false});
+  if (error){ console.error(error); return; }
+  PRODS = data || [];
+  document.getElementById('cuenta').textContent = `(${PRODS.length})`;
+  document.getElementById('listaProds').innerHTML = PRODS.map(p => {
+    const esM = p.tipo_venta === 'metros';
+    const stockBajo = esM ? p.stock <= 5 : p.stock <= 3;
+    return `<div class="prod ${p.activo?'':'inactivo'}">
+      <div class="mini" style="${p.imagen_url?`background-image:url('${p.imagen_url}')`:''}">${p.imagen_url?'':'🧵'}</div>
+      <div>
+        <b>${esc(p.nombre)}</b> ${p.vintage?'<span class="insignia">archivo</span>':''} ${p.destacado?'⭐':''}
+        <div class="meta">${CATS[p.categoria]} · ${EUR(p.precio)}${esM?'/m':'/ud'} ·
+          stock: ${NUM(p.stock)} ${esM?'m':'ud'} ${stockBajo?'<span class="aviso-stock">¡queda poco!</span>':''}
+          ${p.activo?'':'· <b>oculta en la tienda</b>'}</div>
+      </div>
+      <div class="acciones">
+        <button class="mini-btn" onclick="editar('${p.id}')">✏️ Editar</button>
+        <button class="mini-btn" onclick="alternar('${p.id}', ${!p.activo})">${p.activo?'🙈 Ocultar':'👁️ Mostrar'}</button>
+        <button class="mini-btn rojo" onclick="borrar('${p.id}')">Borrar</button>
+      </div>
+    </div>`;
+  }).join('') || '<div style="color:var(--topo)">Aún no has añadido ninguna tela. ¡Empieza con el formulario de arriba!</div>';
+}
+window.editar = function(id){
+  const p = PRODS.find(x => x.id === id); if(!p) return;
+  editando = id; fotoUrl = null;
+  document.getElementById('fNombre').value = p.nombre;
+  document.getElementById('fCategoria').value = p.categoria;
+  document.getElementById('fDesc').value = p.descripcion || '';
+  document.getElementById('fTipo').value = p.tipo_venta;
+  document.getElementById('fPrecio').value = p.precio;
+  document.getElementById('fStock').value = p.stock;
+  document.getElementById('fAncho').value = p.ancho_cm || '';
+  document.getElementById('fComp').value = p.composicion || '';
+  document.getElementById('fVintage').checked = p.vintage;
+  document.getElementById('fDestacado').checked = p.destacado;
+  const pv = document.getElementById('fPreview');
+  if (p.imagen_url){ pv.style.backgroundImage = `url('${p.imagen_url}')`; pv.textContent=''; }
+  document.getElementById('tituloForm').textContent = `Editando: ${p.nombre}`;
+  document.getElementById('btnCancelar').classList.remove('oculto');
+  document.getElementById('btnGuardar').textContent = 'Guardar cambios';
+  window.scrollTo({top:0, behavior:'smooth'});
+};
+window.alternar = async function(id, activo){
+  await db.from('productos').update({activo}).eq('id', id);
+  toast(activo ? 'Tela visible en la tienda' : 'Tela oculta');
+  cargarProductos();
+};
+window.borrar = async function(id){
+  if (!confirm('¿Seguro que quieres borrar esta tela? No se puede deshacer.\n(Si solo quieres retirarla temporalmente, usa «Ocultar».)')) return;
+  await db.from('productos').delete().eq('id', id);
+  toast('Tela borrada'); cargarProductos();
+};
+
+// ---------- pedidos ----------
+async function cargarPedidos(){
+  const { data, error } = await db.from('pedidos').select('*').order('creado_en',{ascending:false});
+  if (error){ console.error(error); return; }
+  const pendientes = (data||[]).filter(p => p.estado === 'pagado').length;
+  document.getElementById('numPedidos').textContent = pendientes ? `(${pendientes} por enviar)` : '';
+  document.getElementById('listaPedidos').innerHTML = (data||[]).map(p => {
+    const dir = p.direccion?.address || p.direccion?.shipping_details?.address || {};
+    const fecha = new Date(p.creado_en).toLocaleString('es-ES',{dateStyle:'medium',timeStyle:'short'});
+    return `<div class="pedido">
+      <div class="cab">
+        <div><b>${esc(p.nombre||'—')}</b> · ${esc(p.email||'')}<div class="meta" style="font-size:.8rem;color:var(--topo)">${fecha}</div></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="estado ${p.estado}">${p.estado}</span>
+          <b>${EUR(p.total)}</b>
+          ${p.estado==='pagado'?`<button class="mini-btn" onclick="marcar('${p.id}','enviado')">📦 Marcar enviado</button>`:''}
+          ${p.estado==='enviado'?`<button class="mini-btn" onclick="marcar('${p.id}','entregado')">✓ Entregado</button>`:''}
+        </div>
+      </div>
+      <ul>${(p.lineas||[]).map(l => `<li>${esc(l.nombre)} — ${NUM(l.cantidad)} ${l.unidad}</li>`).join('')}</ul>
+      <div style="font-size:.85rem;color:var(--topo);margin-top:6px">
+        📍 ${esc([dir.line1, dir.line2, dir.postal_code, dir.city, dir.state].filter(Boolean).join(', ') || 'Dirección en Stripe')}
+      </div>
+    </div>`;
+  }).join('') || '<div style="color:var(--topo)">Todavía no hay pedidos. En cuanto alguien compre, aparecerá aquí con su dirección de envío.</div>';
+}
+window.marcar = async function(id, estado){
+  await db.from('pedidos').update({estado}).eq('id', id);
+  toast(estado === 'enviado' ? 'Pedido marcado como enviado 📦' : 'Pedido entregado ✓');
+  cargarPedidos();
+};
+
+// ---------- toast ----------
+let toastT;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('on'), 3000);
+}
+
+comprobarSesion();
+</script>
+</body>
+</html>
