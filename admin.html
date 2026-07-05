@@ -46,6 +46,13 @@
   .pedido{background:#fff;border:1px solid var(--hilo);border-radius:12px;padding:14px 16px;margin-bottom:10px}
   .pedido .cab{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
   .pedido ul{margin:8px 0 0 18px;font-size:.9rem}
+  .ped-lineas{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+  .ped-linea{display:flex;align-items:center;gap:12px}
+  .ped-foto{width:52px;height:52px;border-radius:8px;background:var(--crudo) center/cover no-repeat;display:grid;place-items:center;font-size:1.3rem;flex-shrink:0;border:1px solid var(--hilo)}
+  .ped-linea .meta{font-size:.82rem;color:var(--topo)}
+  .ped-envio{background:var(--crudo);border-radius:10px;padding:12px 14px;font-size:.9rem;line-height:1.5}
+  .ped-envio .tit{font-weight:700;color:var(--tinto-osc);margin-bottom:4px;font-size:.85rem}
+  .ped-envio a{color:var(--tinto)}
   .estado{font-size:.78rem;font-weight:700;padding:3px 12px;border-radius:999px}
   .estado.pagado{background:#fdeecb;color:#8a6200}
   .estado.enviado{background:#e2ecf7;color:#2b5b8f}
@@ -340,11 +347,18 @@ async function cargarPedidos(){
   const pendientes = (data||[]).filter(p => p.estado === 'pagado').length;
   document.getElementById('numPedidos').textContent = pendientes ? `(${pendientes} por enviar)` : '';
   document.getElementById('listaPedidos').innerHTML = (data||[]).map(p => {
-    const dir = p.direccion?.address || p.direccion?.shipping_details?.address || {};
+    // dirección: formato nuevo {nombre, telefono, email, address} o formatos antiguos
+    const d = p.direccion || {};
+    const dir = d.address || d.shipping_details?.address || d || {};
+    const nombreEnvio = d.nombre || p.nombre || '—';
+    const telefono = d.telefono || null;
     const fecha = new Date(p.creado_en).toLocaleString('es-ES',{dateStyle:'medium',timeStyle:'short'});
+    const lineasDir = [dir.line1, dir.line2].filter(Boolean).join(', ');
+    const lineaCP = [dir.postal_code, dir.city, dir.state].filter(Boolean).join(' ');
+    const hayDir = lineasDir || lineaCP;
     return `<div class="pedido">
       <div class="cab">
-        <div><b>${esc(p.nombre||'—')}</b> · ${esc(p.email||'')}<div class="meta" style="font-size:.8rem;color:var(--topo)">${fecha}</div></div>
+        <div><b>${esc(nombreEnvio)}</b><div class="meta" style="font-size:.8rem;color:var(--topo)">${fecha}</div></div>
         <div style="display:flex;gap:8px;align-items:center">
           <span class="estado ${p.estado}">${p.estado}</span>
           <b>${EUR(p.total)}</b>
@@ -352,9 +366,21 @@ async function cargarPedidos(){
           ${p.estado==='enviado'?`<button class="mini-btn" onclick="marcar('${p.id}','entregado')">✓ Entregado</button>`:''}
         </div>
       </div>
-      <ul>${(p.lineas||[]).map(l => `<li>${esc(l.nombre)} — ${NUM(l.cantidad)} ${l.unidad}</li>`).join('')}</ul>
-      <div style="font-size:.85rem;color:var(--topo);margin-top:6px">
-        📍 ${esc([dir.line1, dir.line2, dir.postal_code, dir.city, dir.state].filter(Boolean).join(', ') || 'Dirección en Stripe')}
+
+      <div class="ped-lineas">
+        ${(p.lineas||[]).map(l => `
+          <div class="ped-linea">
+            <div class="ped-foto" style="${l.imagen?`background-image:url('${l.imagen}')`:''}">${l.imagen?'':'🧵'}</div>
+            <div><b>${esc(l.nombre)}</b><div class="meta">${NUM(l.cantidad)} ${l.unidad}</div></div>
+          </div>`).join('')}
+      </div>
+
+      <div class="ped-envio">
+        <div class="tit">📦 Datos de envío</div>
+        <div><b>${esc(nombreEnvio)}</b></div>
+        ${hayDir ? `<div>${esc(lineasDir)}${lineasDir?'<br>':''}${esc(lineaCP)}</div>` : '<div class="meta">⚠️ Sin dirección (pedido antiguo — vuelve a probar con una compra nueva)</div>'}
+        ${telefono ? `<div>📞 <a href="tel:${esc(telefono)}">${esc(telefono)}</a></div>` : ''}
+        ${p.email ? `<div>✉️ <a href="mailto:${esc(p.email)}">${esc(p.email)}</a></div>` : ''}
       </div>
     </div>`;
   }).join('') || '<div style="color:var(--topo)">Todavía no hay pedidos. En cuanto alguien compre, aparecerá aquí con su dirección de envío.</div>';
