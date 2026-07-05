@@ -118,7 +118,12 @@
   dialog{border:none;border-radius:var(--radius);max-width:760px;width:calc(100% - 32px);padding:0;box-shadow:0 30px 80px rgba(0,0,0,.3)}
   dialog::backdrop{background:rgba(44,36,29,.55)}
   .modal-in{display:grid;grid-template-columns:1fr 1fr}
-  .modal-in .foto-g{background:var(--crudo) center/cover no-repeat;min-height:320px}
+  .modal-in .foto-lado{display:flex;flex-direction:column}
+  .modal-in .foto-g{background:var(--crudo) center/cover no-repeat;min-height:320px;flex:1}
+  .miniaturas{display:flex;gap:8px;padding:10px;flex-wrap:wrap}
+  .miniaturas img{width:54px;height:54px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid transparent;opacity:.7;transition:opacity .15s}
+  .miniaturas img:hover{opacity:1}
+  .miniaturas img.activa{border-color:var(--tinto);opacity:1}
   .modal-in .info{padding:26px;display:flex;flex-direction:column;gap:12px}
   .modal-in h3{font-size:1.5rem;color:var(--tinto-osc)}
   .modal-in .desc{color:var(--topo);font-size:.95rem;white-space:pre-line}
@@ -301,7 +306,10 @@
 <dialog id="modal">
   <button class="cerrar" onclick="modal.close()" aria-label="Cerrar">✕</button>
   <div class="modal-in">
-    <div class="foto-g" id="mFoto"></div>
+    <div class="foto-lado">
+      <div class="foto-g" id="mFoto"></div>
+      <div class="miniaturas" id="mMinis"></div>
+    </div>
     <div class="info">
       <span id="mBadge"></span>
       <h3 id="mNombre"></h3>
@@ -390,12 +398,13 @@ function pintar(){
   grid.innerHTML = lista.map(p => {
     const unidad = p.tipo_venta === 'metros' ? '/ metro' : '/ unidad';
     const det = [p.composicion, p.ancho_cm ? `ancho ${p.ancho_cm} cm` : null].filter(Boolean).join(' · ');
+    const portada = (p.imagenes && p.imagenes.length) ? p.imagenes[0] : p.imagen_url;
     const poco = p.tipo_venta === 'metros'
-      ? (p.stock <= 5 ? `Últimos ${NUM(p.stock)} m` : '')
-      : (p.stock <= 3 ? `Quedan ${NUM(p.stock)}` : '');
+      ? (p.stock <= 2 ? `Últimos ${NUM(p.stock)} m` : '')
+      : '';
     return `<article class="card">
-      <div class="foto ${p.imagen_url?'':'sinimg'}" style="${p.imagen_url?`background-image:url('${p.imagen_url}')`:''}" onclick="abrir('${p.id}')">
-        ${p.imagen_url?'':'🧵'}
+      <div class="foto ${portada?'':'sinimg'}" style="${portada?`background-image:url('${portada}')`:''}" onclick="abrir('${p.id}')">
+        ${portada?'':'🧵'}
         ${p.vintage?'<span class="insignia">Tela de archivo</span>':''}
       </div>
       <div class="cuerpo">
@@ -436,7 +445,15 @@ window.abrir = function(id){
   actual = PRODUCTOS.find(p => p.id === id); if(!actual) return;
   const esMetros = actual.tipo_venta === 'metros';
   cant = esMetros ? 0.5 : 1;
-  document.getElementById('mFoto').style.backgroundImage = actual.imagen_url ? `url('${actual.imagen_url}')` : 'none';
+  // galería: usa la lista `imagenes`; si está vacía, cae a imagen_url
+  const fotos = (actual.imagenes && actual.imagenes.length) ? actual.imagenes
+              : (actual.imagen_url ? [actual.imagen_url] : []);
+  const grande = document.getElementById('mFoto');
+  grande.style.backgroundImage = fotos.length ? `url('${fotos[0]}')` : 'none';
+  const minis = document.getElementById('mMinis');
+  minis.innerHTML = fotos.length > 1 ? fotos.map((f,i) =>
+    `<img src="${f}" class="${i===0?'activa':''}" onclick="cambiarFoto('${f}', this)" alt="Foto ${i+1}">`
+  ).join('') : '';
   document.getElementById('mBadge').innerHTML = actual.vintage ? '<span class="insignia" style="position:static">Tela de archivo — pieza única</span>' : '';
   document.getElementById('mNombre').textContent = actual.nombre;
   document.getElementById('mDetalles').textContent = [actual.composicion, actual.ancho_cm?`Ancho: ${actual.ancho_cm} cm`:null].filter(Boolean).join(' · ');
@@ -446,6 +463,10 @@ window.abrir = function(id){
   document.getElementById('mStock').textContent = esMetros ? `Disponible: ${NUM(actual.stock)} m` : `Disponible: ${NUM(actual.stock)} ud.`;
   refrescarCant();
   modal.showModal();
+};
+window.cambiarFoto = function(url, el){
+  document.getElementById('mFoto').style.backgroundImage = `url('${url}')`;
+  document.querySelectorAll('#mMinis img').forEach(x => x.classList.toggle('activa', x === el));
 };
 function refrescarCant(){
   const esMetros = actual.tipo_venta === 'metros';
@@ -500,8 +521,9 @@ function pintarCarrito(){
       const p = PRODUCTOS.find(x => x.id === l.id);
       if (!p) return '';
       const esM = p.tipo_venta === 'metros';
+      const mini = (p.imagenes && p.imagenes.length) ? p.imagenes[0] : p.imagen_url;
       return `<div class="linea">
-        <div class="mini" style="${p.imagen_url?`background-image:url('${p.imagen_url}')`:''}"></div>
+        <div class="mini" style="${mini?`background-image:url('${mini}')`:''}"></div>
         <div>
           <b>${esc(p.nombre)}</b>
           <div class="ctl">

@@ -58,6 +58,14 @@
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120%);background:var(--carbon);color:#fff;padding:12px 24px;border-radius:999px;z-index:99;transition:transform .3s;font-size:.92rem}
   .toast.on{transform:translateX(-50%) translateY(0)}
   .vista-previa{width:110px;height:110px;border-radius:10px;background:var(--crudo) center/cover no-repeat;border:1.5px dashed var(--hilo);display:grid;place-items:center;color:var(--topo);font-size:.75rem;text-align:center}
+  .galeria-admin{display:flex;gap:10px;flex-wrap:wrap}
+  .foto-item{position:relative;width:100px;height:100px;border-radius:10px;background:var(--crudo) center/cover no-repeat;border:1.5px solid var(--hilo);overflow:hidden}
+  .foto-item.portada{border:2.5px solid var(--tinto)}
+  .foto-item .tag{position:absolute;bottom:0;left:0;right:0;background:var(--tinto);color:#fff;font-size:.68rem;text-align:center;padding:2px;font-weight:700}
+  .foto-item .acc{position:absolute;top:3px;right:3px;display:flex;gap:3px}
+  .foto-item .acc button{width:22px;height:22px;border-radius:6px;border:none;background:rgba(255,255,255,.9);cursor:pointer;font-size:.7rem;display:grid;place-items:center;padding:0}
+  .foto-item .acc button.borrar{color:var(--tinto)}
+  .galeria-admin .vacio-fotos{color:var(--topo);font-size:.83rem;padding:10px 0}
   @media(max-width:640px){.fila2,.fila3{grid-template-columns:1fr}.prod{grid-template-columns:52px 1fr}.prod .acciones{grid-column:1/-1;justify-content:flex-start}}
 </style>
 </head>
@@ -126,13 +134,11 @@
           <label class="check" style="margin:0"><input type="checkbox" id="fDestacado"> ⭐ Destacar en portada</label>
         </div>
       </div>
-      <div class="campo" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
-        <div class="vista-previa" id="fPreview">Foto de la tela</div>
-        <div style="flex:1;min-width:220px">
-          <label>Foto</label>
-          <input type="file" id="fFoto" accept="image/*">
-          <div style="font-size:.78rem;color:var(--topo);margin-top:4px">Consejo: foto con luz natural y la tela bien extendida. Se sube al elegirla.</div>
-        </div>
+      <div class="campo">
+        <label>Fotos (hasta 4 — la primera es la portada)</label>
+        <div class="galeria-admin" id="fGaleria"></div>
+        <input type="file" id="fFoto" accept="image/*" multiple style="margin-top:10px">
+        <div style="font-size:.78rem;color:var(--topo);margin-top:4px">Consejo: foto con luz natural y la tela bien extendida. Puedes elegir varias a la vez. Se suben al elegirlas. La primera foto será la portada; arrástralas o usa ★ para cambiar cuál es la portada.</div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn" id="btnGuardar">Guardar tela</button>
@@ -164,7 +170,7 @@ const CATS = {'algodones':'Algodones','infantiles':'Infantiles','varios':'Varios
 const esc = s => (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 let editando = null;      // id del producto en edición
-let fotoUrl = null;       // url de la foto ya subida
+let fotos = [];           // lista de urls de fotos (máx 4), la primera es portada
 
 // ---------- sesión ----------
 async function comprobarSesion(){
@@ -191,19 +197,40 @@ document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
   document.getElementById('tabPedidos').classList.toggle('oculto', t.dataset.t!=='pedidos');
 });
 
-// ---------- foto ----------
+// ---------- fotos ----------
 document.getElementById('fFoto').onchange = async (e) => {
-  const file = e.target.files[0]; if(!file) return;
-  toast('Subiendo foto…');
-  const nombre = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_')}`;
-  const { error } = await db.storage.from('productos').upload(nombre, file, { upsert:false });
-  if (error){ toast('Error subiendo la foto'); console.error(error); return; }
-  const { data } = db.storage.from('productos').getPublicUrl(nombre);
-  fotoUrl = data.publicUrl;
-  const pv = document.getElementById('fPreview');
-  pv.style.backgroundImage = `url('${fotoUrl}')`; pv.textContent = '';
-  toast('Foto subida ✓');
+  const files = Array.from(e.target.files); if(!files.length) return;
+  const hueco = 4 - fotos.length;
+  if (hueco <= 0){ toast('Máximo 4 fotos'); e.target.value=''; return; }
+  const aSubir = files.slice(0, hueco);
+  if (files.length > hueco) toast(`Solo caben ${hueco} más (máximo 4)`);
+  toast('Subiendo fotos…');
+  for (const file of aSubir){
+    const nombre = `${Date.now()}-${Math.random().toString(36).slice(2,7)}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_')}`;
+    const { error } = await db.storage.from('productos').upload(nombre, file, { upsert:false });
+    if (error){ toast('Error subiendo una foto'); console.error(error); continue; }
+    const { data } = db.storage.from('productos').getPublicUrl(nombre);
+    fotos.push(data.publicUrl);
+  }
+  e.target.value = '';
+  pintarGaleria();
+  toast('Fotos subidas ✓');
 };
+
+function pintarGaleria(){
+  const g = document.getElementById('fGaleria');
+  if (!fotos.length){ g.innerHTML = '<div class="vacio-fotos">Aún no has añadido fotos.</div>'; return; }
+  g.innerHTML = fotos.map((url,i) => `
+    <div class="foto-item ${i===0?'portada':''}" style="background-image:url('${url}')">
+      <div class="acc">
+        ${i!==0?`<button title="Poner de portada" onclick="portadaFoto(${i})">★</button>`:''}
+        <button class="borrar" title="Quitar" onclick="quitarFoto(${i})">✕</button>
+      </div>
+      ${i===0?'<div class="tag">Portada</div>':''}
+    </div>`).join('');
+}
+window.portadaFoto = function(i){ const [f] = fotos.splice(i,1); fotos.unshift(f); pintarGaleria(); };
+window.quitarFoto = function(i){ fotos.splice(i,1); pintarGaleria(); };
 
 // ---------- guardar / editar ----------
 document.getElementById('btnGuardar').onclick = async () => {
@@ -220,7 +247,8 @@ document.getElementById('btnGuardar').onclick = async () => {
     destacado: document.getElementById('fDestacado').checked,
   };
   if (!p.nombre || isNaN(p.precio) || isNaN(p.stock)) { toast('Faltan datos: nombre, precio y stock son obligatorios'); return; }
-  if (fotoUrl) p.imagen_url = fotoUrl;
+  p.imagenes = fotos;                       // lista completa (puede ir vacía)
+  p.imagen_url = fotos.length ? fotos[0] : null;  // portada, por compatibilidad
 
   const btn = document.getElementById('btnGuardar');
   btn.disabled = true;
@@ -233,13 +261,12 @@ document.getElementById('btnGuardar').onclick = async () => {
   limpiarForm(); cargarProductos();
 };
 function limpiarForm(){
-  editando = null; fotoUrl = null;
+  editando = null; fotos = [];
   ['fNombre','fDesc','fPrecio','fStock','fAncho','fComp'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('fVintage').checked = false;
   document.getElementById('fDestacado').checked = false;
   document.getElementById('fFoto').value = '';
-  const pv = document.getElementById('fPreview');
-  pv.style.backgroundImage = 'none'; pv.textContent = 'Foto de la tela';
+  pintarGaleria();
   document.getElementById('tituloForm').textContent = 'Añadir una tela nueva';
   document.getElementById('btnCancelar').classList.add('oculto');
   document.getElementById('btnGuardar').textContent = 'Guardar tela';
@@ -255,13 +282,16 @@ async function cargarProductos(){
   document.getElementById('cuenta').textContent = `(${PRODS.length})`;
   document.getElementById('listaProds').innerHTML = PRODS.map(p => {
     const esM = p.tipo_venta === 'metros';
-    const stockBajo = esM ? p.stock <= 5 : p.stock <= 3;
+    const stockBajo = esM && p.stock <= 2;
+    const portada = (p.imagenes && p.imagenes.length) ? p.imagenes[0] : p.imagen_url;
+    const nFotos = (p.imagenes && p.imagenes.length) ? p.imagenes.length : (p.imagen_url ? 1 : 0);
     return `<div class="prod ${p.activo?'':'inactivo'}">
-      <div class="mini" style="${p.imagen_url?`background-image:url('${p.imagen_url}')`:''}">${p.imagen_url?'':'🧵'}</div>
+      <div class="mini" style="${portada?`background-image:url('${portada}')`:''}">${portada?'':'🧵'}</div>
       <div>
         <b>${esc(p.nombre)}</b> ${p.vintage?'<span class="insignia">archivo</span>':''} ${p.destacado?'⭐':''}
         <div class="meta">${CATS[p.categoria]} · ${EUR(p.precio)}${esM?'/m':'/ud'} ·
           stock: ${NUM(p.stock)} ${esM?'m':'ud'} ${stockBajo?'<span class="aviso-stock">¡queda poco!</span>':''}
+          ${nFotos>1?`· ${nFotos} fotos`:''}
           ${p.activo?'':'· <b>oculta en la tienda</b>'}</div>
       </div>
       <div class="acciones">
@@ -274,7 +304,8 @@ async function cargarProductos(){
 }
 window.editar = function(id){
   const p = PRODS.find(x => x.id === id); if(!p) return;
-  editando = id; fotoUrl = null;
+  editando = id;
+  fotos = (p.imagenes && p.imagenes.length) ? [...p.imagenes] : (p.imagen_url ? [p.imagen_url] : []);
   document.getElementById('fNombre').value = p.nombre;
   document.getElementById('fCategoria').value = p.categoria;
   document.getElementById('fDesc').value = p.descripcion || '';
@@ -285,8 +316,7 @@ window.editar = function(id){
   document.getElementById('fComp').value = p.composicion || '';
   document.getElementById('fVintage').checked = p.vintage;
   document.getElementById('fDestacado').checked = p.destacado;
-  const pv = document.getElementById('fPreview');
-  if (p.imagen_url){ pv.style.backgroundImage = `url('${p.imagen_url}')`; pv.textContent=''; }
+  pintarGaleria();
   document.getElementById('tituloForm').textContent = `Editando: ${p.nombre}`;
   document.getElementById('btnCancelar').classList.remove('oculto');
   document.getElementById('btnGuardar').textContent = 'Guardar cambios';
@@ -343,6 +373,7 @@ function toast(msg){
   clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('on'), 3000);
 }
 
+pintarGaleria();
 comprobarSesion();
 </script>
 </body>
