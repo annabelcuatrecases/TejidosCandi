@@ -368,7 +368,7 @@ if (params.get('pedido') === 'ok') {
   carrito = []; guardarCarrito();
   const b = document.getElementById('banner');
   b.className = 'banner ok';
-  b.textContent = '¡Gracias por tu pedido! 🧵 Te llegará un correo de confirmación y lo prepararemos enseguida.';
+  b.textContent = '¡Gracias por tu pedido! 🧵 Hemos recibido tu pago correctamente y prepararemos tu pedido enseguida. Recibirás el recibo de la compra por correo.';
   history.replaceState({}, '', location.pathname);
 } else if (params.get('pedido') === 'cancelado') {
   const b = document.getElementById('banner');
